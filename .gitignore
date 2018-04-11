@@ -37,3 +37,5 @@ octave-workspace
 *.hdf5
 *.h5
 *.asv
+*.csv
+*.m4v

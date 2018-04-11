@@ -1,11 +1,11 @@
 % specify the folder where the A to B paris are placed
 
 % define input and output folder
-filename_TIF = 'Artificial_dataset2_GT';
-filedir_TIF = './LINES/ArtiLearningRandom/'
+filename_TIF = 'Leibniz_realB';
+filedir_TIF = './LINES/'
 filedir_dest = ['./' filename_TIF '_VIDEO_GENERATED/train'];
 fname = [filedir_TIF filename_TIF '.tif'];
-
+ispng = true; 
 background_level = 0;
 
 % mkdir if not exist
@@ -17,12 +17,12 @@ vname = [filename_TIF extension_video];
 vname = [filedir_TIF 'Artificial_Dataset2_GT_Noised_converted.m4v'];
 
 
-if(0)
+if(1)
 % create video writer object
 myVideo = VideoWriter(vname, 'MPEG-4');%'Grayscale AVI');%,'Uncompressed AVI');
 myVideo.FrameRate = 3;  % Default 30
 %myVideo.CompressionRatio = 1;
-myVideo.Quality = 20;
+myVideo.Quality = 10;
 myVideoCompressionMethod = 'H.264';
 %myVideo.LosslessCompression = True;
 
@@ -38,22 +38,23 @@ i = 1;
 
 iframe = imread(fname, i)-background_level ;
 mysize = size(iframe);
-gain = 1;
-poisson_par = 7;
+gain = .34;
+poisson_par = 100;
+pixeloffset = 4.074;
 
 %% apply camera statistics
 for(i = 1:n_frames)
     %% apply camera statistics
     iframe = imread(fname, i)-background_level ;
     
-    % eventually normalize
+    % eventually normalize and quantize
     iframe = uint8(2^8*double(iframe)./double(max(max(1.*iframe))));
     
     % also make it a bit darker
-    sensorOut_e = noise(iframe*.4, 'Poisson', poisson_par);
-    readNoise_e = randn(mysize) * 3.0276; %units are e- rms
+    sensorOut_e = noise(iframe, 'Poisson', poisson_par);
+    readNoise_e = randn(mysize) * 1.23 * 10; %units are e- rms
     %sensorOut_e = poissrnd(5.2,10,10);  %units are e-
-    image_DN = uint8((sensorOut_e + abs(readNoise_e)) * gain);   %units DN
+    image_DN = uint8((sensorOut_e + abs(readNoise_e)) * gain) + pixeloffset;   %units DN
     
     
     
@@ -88,8 +89,17 @@ for(i = 1:n_frames)
     % produce stacked images
     iframe = horzcat(iframe_video, iframe_tif);
     
+    if(ispng)
     % write out the images
     imwrite(uint8(iframe), [filedir_dest '/Image_' filename_TIF '_' num2str(i) '.png'])
+    
+    else
+         % write image 
+    imwrite(uint8(iframe), [filedir_dest '/Image_' filename_TIF '.png'], 'WriteMode', 'append');%,  'Compression','none');
+   
+        
+    end
+    
     disp([num2str(i) '/ ' num2str(n_frames)])
 end
 

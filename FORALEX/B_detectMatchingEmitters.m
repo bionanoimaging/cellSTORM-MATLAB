@@ -1,7 +1,7 @@
 % Script to compare files localized with Thunderstorm;
 % you can process groundtruth to NN-processed frames or without NN % processing! 
 disp('Import the data. Might take a while!')
-mypath = './MOV_2018_02_06_16_25_19_ISO3200_texp_1_45_line_combined_unprocessed_forAlex_alltogether_2/_aligned/'
+mypath = './Leibniz/'
 realB = importThunderstorm([mypath 'realB.csv'], 1);
 realA = importThunderstorm([mypath 'realA.csv'], 1);
 fakeB = importThunderstorm([mypath 'fakeB.csv'], 1);
@@ -60,9 +60,9 @@ end
 xy_radius = 50;
 
 figure
-histogram(distance_realA_realB(distance_realA_realB<xy_radius))
+histogram(distance_realA_realB)%<xy_radius))
 hold on 
-histogram(distance_fakeB_realB(distance_fakeB_realB<xy_radius))
+histogram(distance_fakeB_realB)%<xy_radius))
 hold off
 
 legend 'realA' 'fakeB'

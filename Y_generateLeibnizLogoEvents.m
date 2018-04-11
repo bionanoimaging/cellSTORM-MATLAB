@@ -2,9 +2,11 @@
 
 % Load LeibnizLogo and generate blinking events after the edges of the
 % image were detecte 
-testimage = dip_image(edge(rgb2gray(uint8(readim('/Users/Bene/Downloads/Download.png')))));
-testimage(0:160, 135:end) = 0;
+testimage = dip_image(edge(rgb2gray(uint8(readim('./Leibniz_Logo_DE_blau_schwarz_500px.png')))));
+testimage(0:377, 300:end) = 0;
 testimage = extract(testimage, [256, 256]);
+imwrite(uint8(2^8*testimage), 'Leibniz_logo_edges.png')
+return
 size(testimage);
 [rows,cols] = find(flip(double(testimage)));
 scatter(cols, rows, '.');
