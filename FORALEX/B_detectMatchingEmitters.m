@@ -51,30 +51,58 @@ for my_iter = my_selectedframes
         % save values 
         %distance_realA_realB{my_iter} = distance_neurest_realA_realB;
         %distance_fakeB_realB{my_iter} = distance_neurest_fakeB_realB;
+        
+        %% Check how close the events are detected - viusally
+        if(0)
+            %%
+            figure
+            subplot(121)
+            scatter(realA_xyevents_i(:,1), realA_xyevents_i(:,2), '+')
+            hold on 
+            scatter(realB_xyevents_i(:,1), realB_xyevents_i(:,2), 'x')
+            hold off
+            legend 'realA' 'realB'
+            
+            subplot(122)
+            scatter(fakeB_xyevents_i(:,1), fakeB_xyevents_i(:,2), '*')
+            hold on 
+            scatter(realB_xyevents_i(:,1), realB_xyevents_i(:,2), 'x')
+            hold off
+            legend 'fakeB' 'realB'
+        end
+        
     end
     
 end
 
 %% plot the counts of the distances to the groundtruth emitter
 
-xy_radius = 50;
+xy_radius = 8000;
+nbins = 45;
 
 figure
-histogram(distance_realA_realB)%<xy_radius))
+histogram(distance_realA_realB(distance_realA_realB<xy_radius), nbins)%)
 hold on 
-histogram(distance_fakeB_realB)%<xy_radius))
+histogram(distance_fakeB_realB(distance_fakeB_realB<xy_radius), nbins)%<xy_radius))
 hold off
 
-legend 'realA' 'fakeB'
-xlabel 'Distance to nearest neighbour groundtruth'
-ylabel 'counts'
+legend 'unprocessed data' 'NN processed data'
+xlabel 'Distance to nearest neighbour groundtruth [nm]'
+ylabel 'Counts'
 
-% average deviation compared to groundtruth:
-disp(['Mean of distance realA -> realB: ' num2str(mean(distance_realA_realB(distance_realA_realB<xy_radius))) ...
-    ', stdv: ' num2str(var(distance_realA_realB(distance_realA_realB<xy_radius)))])
+hgexport_script('result_histogram.png', 15, 15, 20,1000,'pdf')
 
-disp(['Mean of distance fakeB -> realB: ' num2str(mean(distance_fakeB_realB(distance_fakeB_realB<xy_radius))) ...
-    ', stdv: ' num2str(var(distance_fakeB_realB(distance_fakeB_realB<xy_radius)))])
+%% average deviation compared to groundtruth:
+disp(['Mean of distance realA -> realB: ' num2str(mean(distance_realA_realB)) ...
+    ', stdv: ' num2str(std(distance_realA_realB)), ...
+    ' Total Number of detected emitters: ' num2str(numel(distance_realA_realB))])
+
+disp(['Mean of distance fakeB -> realB: ' num2str(mean(distance_fakeB_realB)) ...
+   ', stdv: ' num2str(std(distance_fakeB_realB)), ...
+    ' Total Number of detected emitters: ' num2str(numel(distance_fakeB_realB))])
+
+disp(['Number of detected emitters from Groundtruth frame: ',  num2str(numel(realB.xnm))])
+
 
 
 
@@ -92,6 +120,7 @@ hold off
 legend realA fakeB
 xlabel framenumber
 ylabel '# of correctly detected frames within threshold circle'
+
 
 
 sum(sum_detection_realA_realB)

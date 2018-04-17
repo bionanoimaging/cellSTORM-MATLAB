@@ -1,10 +1,10 @@
 %Convert the TIFF Stack into the pix2pix readable png files
-fpath = '/media/useradmin/Data/Benedict/Dropbox/Dokumente/Promotion/PROJECTS/STORM/DATASET_NN/neuroSTORM/';
-fpath = './LINES/'
+fpath = '/home/useradmin/Dropbox/Dokumente/Promotion/PROJECTS/STORM/DATASET_NN/neuroSTORM/';
+
 fname = uigetfile({'*.mp4'}, 'Select the Video File', fpath)
 
 fpath_dest = fpath;'/media/useradmin/Data/Benedict/Dropbox/Dokumente/Promotion/PROJECTS/STORM/DATASET_NN/04_UNPROCESSED_RAW_HW/';
-roi = 256; 
+roi = 512; 
 fpath_dest = [fpath_dest fname '_' num2str(roi) '/test'];
 myfname = [fpath fname]
 
@@ -50,10 +50,11 @@ disp('ROI has been extracted')
 for x = 1 : nframes
     
     % crop out the centre of the image with width/height = 512 px
-    iframe = (read(obj, x)); iframe = iframe(:,:,1);
+    iframe = (read(obj, x)); 
     %iframe = iframe(mycentre(1)-roi:mycentre(1)+roi-1,mycentre(2)-roi:mycentre(2)+roi-1);
-    iframe = uint8(extract(dip_image(iframe), roi_size, roi_center));
-    
+    iframe = extract(dip_image(iframe), roi_size, roi_center);
+    iframe = mean(iframe, [], 3);
+    iframe = uint8(iframe);
     % write image
     imwrite(horzcat(iframe, iframe*0), [fpath_dest '/Image_' num2str(x) '.png']);%,  'Compression','none');
     
