@@ -27,7 +27,7 @@ octave-workspace
 # BIG files
 *.mat
 *.tif
-*.png
+#*.png
 *.dng
 *.DS_store
 *.avi
